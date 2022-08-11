@@ -7,11 +7,17 @@ import Footer from './Footer';
 import './Login.css'
 export default class Login extends Component {
   constructor(props) {
+    var flag;
+    if(localStorage.getItem('jwtToken')==null){
+      flag=false;
+    }else{
+      flag=true;
+    }
     super(props);
     this.state = {
       email: '',
       password: '',
-      isloggedin: false,
+      isloggedin:flag,
       showError:false
     };
     //this.isloggedin = false;

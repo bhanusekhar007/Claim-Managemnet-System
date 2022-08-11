@@ -5,6 +5,7 @@ import ClaimStatus from './ClaimStatus';
 import { useNavigate } from 'react-router-dom';
 import image from '../Pictures/claims.jpg';
 import Footer from './Footer';
+import Swal from 'sweetalert2';
 import Loading from './Loading';
 
 export default function ViewClaims() {
@@ -27,11 +28,6 @@ export default function ViewClaims() {
         const user = localStorage.getItem('userId');
         const jwt = localStorage.getItem('jwtToken');
         setTimeout(() => setLoading(false), 2500)
-        console.log(userId);
-        // if(user.length === 0 || jwt.length === 0){
-        //     alert("You are not authorized to view this page. Please Login First");
-        //     navigate("/");
-        // }
         
             axios.get(`http://localhost:8717/user-ms/users/getAllClaims/${user}`,
             {
@@ -44,17 +40,25 @@ export default function ViewClaims() {
                     setclaims(res.data);
                     setdatafetched(true);
                 }
-                console.log(res);
-                if(res.status === 401){
-                    alert("You are not authorized to view this content, Please login again")
-                }
-                if(res.status === 500) {
-                    alert("Internal server issue, Please try again after some time")
-                }
                 if(res.status === 204){
                     setmessage(true);
                 }
             }).catch(err=>{
+                if(err.response.status===401){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops!',
+                        text: 'Please Login to Continue',
+                
+                      })
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops!',
+                        text: 'Something Went Wrong!',
+                
+                      })
+                }
                 navigate('/');
             })
 
@@ -77,7 +81,12 @@ export default function ViewClaims() {
         }).then((res) => {
           if(res.status===200){
             localStorage.clear();
-            alert("Successfully logged out");
+            Swal.fire({
+                icon: 'success',
+                title: 'We Will See you Soon',
+                text: 'Logged out Successfully',
+      
+              })
             navigate('/');
           }
         })

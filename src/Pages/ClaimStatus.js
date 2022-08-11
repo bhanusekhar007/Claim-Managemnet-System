@@ -2,6 +2,7 @@ import React,{useEffect, useState} from 'react';
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 export default function ClaimStatus(props){
 
     const [isShow, invokeModal] = React.useState(true);
@@ -33,10 +34,15 @@ export default function ClaimStatus(props){
                 console.log(res.data);
             }
         }).catch((err) =>{
-            // if(err.status === 401){
-            //     alert("please login again");
-            //     navigate('/');
-            // }
+            if(err.response.status === 401){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Please Login to Continue',
+            
+                  })
+                navigate('/');
+            }
             navigate('/');
         })
     });

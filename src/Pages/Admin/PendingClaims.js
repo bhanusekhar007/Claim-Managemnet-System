@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import axios from "axios";
 import SetClaimAction from "./SetClaimAction";
 import image from '../../Pictures/empty.webp';
+import Swal from 'sweetalert2';
 export default function PendingClaims() {
 
   const [claims,setclaims] = useState([]);
@@ -15,16 +16,10 @@ export default function PendingClaims() {
   const [claimDescription,setclaimDescription] = useState('');
   const [claimAmount,setclaimAmount]=useState(0);
   const navigate = useNavigate();
-
   useEffect(() => {
+
       const user = localStorage.getItem('userId');
       const jwt = localStorage.getItem('jwtToken');
-      console.log(userId);
-      // if(user.length === 0 || jwt.length === 0){
-      //   alert("You are not authorized to view this page. Please Login First");
-      //   navigate("/");
-      // }
-      // else{
         axios.get(`http://localhost:8717/user-ms/admin/pendingClaims`,{
           headers : {
             'Authorization': `Bearer ${jwt}`,
@@ -36,8 +31,13 @@ export default function PendingClaims() {
             setdatafetched(true);
           }
         }).catch((err) =>{
-          if(err.status === 401){
-              alert("please login again");
+          if(err.response.status === 401){
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops!',
+              text: 'Please Login to Continue',
+      
+            })
               navigate('/');
           }
       })
@@ -58,16 +58,15 @@ export default function PendingClaims() {
     }).then((res) => {
       if(res.status===200){
         localStorage.clear();
-        alert("Successfully logged out");
+        Swal.fire({
+          icon: 'success',
+          title: 'We Will See you Soon',
+          text: 'Logged out Successfully',
+
+        })
         navigate('/');
       }
-    }).catch((err) =>{
-      // if(err.status === 401){
-      //     alert("please login again");
-      //     navigate('/');
-      // }
-      navigate('/');
-  })
+    })
   }
 
   return (
@@ -107,6 +106,12 @@ export default function PendingClaims() {
                             setclaimDescription(data.claimDescription);
                             setclaimAmount(data.claimAmount);
                             handleClick();
+                            {
+                              const idToRemove=data.claimId;
+                              const filteredClaims = claims.filter((item) => item.claimId !== idToRemove);
+                              setclaims(filteredClaims);
+                            }
+                            // setclaims(filteredClaims);
                         }}>Action</Button></td>
                     </tr>
                     )
@@ -116,7 +121,8 @@ export default function PendingClaims() {
           </tbody>
         </table>
         {
-        (datafetched) && (claims.length === 0) && <div className="text-center" >
+          
+        (datafetched) || (claims.length===0) && <div className="text-center" >
           <img src={image} alt="null"  />
         </div>
         }

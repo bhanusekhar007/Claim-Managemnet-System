@@ -2,6 +2,7 @@ import React,{useState} from 'react';
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 export default function NewClaim(props){
     
     const [isShow, invokeModal] = React.useState(true);
@@ -31,14 +32,31 @@ export default function NewClaim(props){
                     }
                 ).then((res) =>{
                     if(res.status === 200){
-                        alert("Successful");
-                        window.location.reload();
+                      Swal.fire({
+                        icon: 'success',
+                        title: 'Request Successful',
+                        text: 'Claim Added Successfully',
+              
+                      })
+                        navigate('/');
                     }
                 }).catch((err) =>{
-                  // if(err.status === 401){
-                  //     alert("please login again");
-                  //     navigate('/');
-                  // }
+                  if(err.response.status === 401){
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops!',
+                      text: 'Please Login to Continue',
+              
+                    })
+                     
+                  }else{
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops!',
+                      text: 'Something Went Wrong!',
+              
+                    })
+                  }
                   navigate('/');
               })
         props.handleClick();

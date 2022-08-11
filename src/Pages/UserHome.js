@@ -8,6 +8,8 @@ import NewPolicy from './NewPolicy.js';
 import NewClaim from './NewClaim.js';
 import Footer from "./Footer.js";
 import Loading from "./Loading"
+import Swal from 'sweetalert2';
+// import withReactContent from 'sweetalert2-react-content';
 export default function UserHome() {
 
   const [userId,setUserId]= useState('');
@@ -18,6 +20,7 @@ export default function UserHome() {
   const [policyid,setpolicyid]  = useState(null);
   const [popupclaim,setpopupclaim] = useState(false);
   const [loading, setLoading] = useState(true)
+
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -44,7 +47,12 @@ export default function UserHome() {
     }).then((res) => {
       if(res.status===200){
         localStorage.clear();
-        alert("Successfully logged out");
+        Swal.fire({
+          icon: 'success',
+          title: 'We Will See you Soon',
+          text: 'Logged out Successfully',
+
+        })
         navigate('/');
       }
     })
@@ -54,11 +62,7 @@ export default function UserHome() {
     const user = localStorage.getItem('userId');
     const jwt = localStorage.getItem('jwtToken');
     console.log(userId);
-    setTimeout(() => setLoading(false), 2500)
-    // if(user.length === 0 || jwt.length === 0){
-    //   alert("You are not authorized to view this page. Please Login First");
-    //   navigate("/");
-    //   }
+    setTimeout(() => setLoading(false), 1500)
      
       axios.get( `http://localhost:8717/user-ms/users/allPolicies/${user}`, {
         headers: {
@@ -71,14 +75,22 @@ export default function UserHome() {
           setPolicies(res.data.allPolicies);
           setdatafetched(true);
         }
-        console.log(res);
-        if(res.status === 401){
-          alert("You are not authorized to view this content, Please login again")
-        }
-        if(res.status === 500) {
-          alert("Internal server issue, Please try again after some time")
-        }
       }).catch((err) =>{
+        if(err.response.status==401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Please Login to Continue',
+    
+          })
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Something Went Wrong!',
+    
+          })
+        }
         navigate("/")
     })
       setUserId(user);

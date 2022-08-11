@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom';
-
+import Swal from 'sweetalert2';
 function NewPolicy(props) {
   const [isShow, invokeModal] = React.useState(true);
 
@@ -38,16 +38,36 @@ function NewPolicy(props) {
     await axios.post(`http://localhost:8717/user-ms/users/addPolicy/${userId}`,
         formData,{
             headers :{
-                // eslint-disable-next-line no-template-curly-in-string
                 "Authorization" : `Bearer ${jwttoken}`,
             }
         }
     ).then((res) =>{
         if(res.status === 200){
-            alert("Successful");
-            window.history.reload();
+          Swal.fire({
+            icon: 'success',
+            title: 'Request Successful',
+            text: 'Policy Added Successfully',
+  
+          })
+           navigate('/');
         }
     }).catch((err) =>{
+      if(err.response.status === 401){
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops!',
+          text: 'Please Login to Continue',
+  
+        })
+          
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops!',
+          text: 'Something Went Wrong!',
+  
+        })
+      }
       navigate('/');
   })
     e.preventDefault();
@@ -165,7 +185,7 @@ function NewPolicy(props) {
 
                     <div className='form-outline mb-4'>
                     <label className='form-label'>
-                            PinCode
+                            Pin Code
                         </label>
                         <input 
                             type="number"

@@ -1,8 +1,8 @@
 import React,{useEffect, useState} from 'react';
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom';
-
+import { Navigate, Route, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 export default function SetClaimAction(props){
 
     const [isShow, invokeModal] = useState(true);
@@ -32,33 +32,43 @@ export default function SetClaimAction(props){
             "adminClaimDescription" : adminClaimDescription,
             "claimStatus" : claimStatus,
         }
-        // console.log(adminClaimDescription);
-        // console.log(claimStatus);
         axios.put(st,data,{
             headers : {
                 "Authorization" : `Bearer ${jwtToken}`,
             }
         }).then((res) => {
             if(res.status === 200){
-                if(claimStatus === 'Accepted')
-                alert("Claim Accepted.It will get reflected in Client's Claim Status");
-                else if(claimStatus==='Rejected'){
-                    alert("You rejected a claim. The same is conveyed to your customer");
+                if(claimStatus === 'Accepted'){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Accepted',
+                        text: 'Claim has been Accepted Successfully',
+              
+                      })
                 }
-                window.history.reload();
-            }
-            else{
-                alert("Something went wrong. Please try again after sometime");
+                
+                else if(claimStatus==='Rejected'){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Rejected',
+                        text: 'Claim has been Rejected Successfully',
+              
+                      })
+                      
+                }
             }
             props.handleClick();
 
         }).catch((err) =>{
-            console.log(err);
-            // if(err.status === 401){
-            //     alert("please login again");
-            //     navigate('/');
-            // }
-            // navigate('/');
+            if(err.response.status === 401){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Please Login to Continue',
+            
+                  })
+                navigate('/');
+            }
         })
     }
 

@@ -1,8 +1,8 @@
 import React, { Component,Redirect } from 'react'
-//import { Form, Button, Container } from 'react-bootstrap'
 import axios from 'axios';
 import {Link, Navigate } from  'react-router-dom';
-
+import Swal from 'sweetalert2';
+import Footer from "./Footer"
 export default class Register extends Component {
     constructor(props) {
         super(props);
@@ -27,19 +27,31 @@ export default class Register extends Component {
                 "email": this.state.email,
                 "password": this.state.password
             
-            }).then(function (res){
+            }).then((res)=>{
                 if(res.status === 201){
-                    alert("Registered Succesfully");
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Welcome to AutoClaim,Account Created Successfully',
+                    text: 'Login to Continue',
+          
+                  })
                     this.setState({isregistered : true});
-                    <Redirect to='/'/>
+                    Navigate('/');
                 }
-                if(res.status === 409){
-                  alert("User already exits, Please try with a new mail ");
-                }
-                
-            }).catch(function (err){
-                if(err.status === 409){
-                  alert("User already exits, Please try with a new mail ");
+            }).catch((err)=>{
+                if(err.response.status === 409){
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'User Already Exist! Try using new Email',
+                  })
+                }else{
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: 'Something Went Wrong!',
+            
+                  })
                 }
             })
             event.preventDefault();
@@ -65,42 +77,45 @@ export default class Register extends Component {
 
                   <form onSubmit={this.handleSubmit}>
                     <div className="form-outline mb-4">
+                    <label className="form-label" >
+                        Your Name
+                      </label>
                       <input
                         type="text"
                         id="name"
                         className="form-control form-control-lg"
                         value={this.state.name}
                         onChange={this.onChange}
+                        required
                       />
-                      <label className="form-label" >
-                        Your Name
-                      </label>
                     </div>
 
                     <div className="form-outline mb-4">
+                    <label className="form-label" >
+                        Your Email
+                      </label>
                       <input
                         type="email"
                         id="email"
                         className="form-control form-control-lg"
                         value={this.state.email}
                         onChange={this.onChange}
+                        required
                       />
-                      <label className="form-label" >
-                        Your Email
-                      </label>
                     </div>
 
                     <div className="form-outline mb-4">
+                    <label className="form-label" >
+                        Password
+                      </label>
                       <input
                         type="password"
                         id="password"
                         className="form-control form-control-lg"
                         value={this.state.password}
                         onChange={this.onChange}
+                        required
                       />
-                      <label className="form-label" >
-                        Password
-                      </label>
                     </div>
 
                       
@@ -148,6 +163,7 @@ export default class Register extends Component {
         </div>
         
       </div>
+      <Footer/>
     </>
         )
     }
